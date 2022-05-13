@@ -15,17 +15,17 @@ else
   cargo build --bin example --target $TARGET --release
 fi
 
-cargo install ic-cdk-optimizer --version 0.3.1 --root ./target
-STATUS=$?
+# cargo install ic-cdk-optimizer --version 0.3.1 --root ./target
+# STATUS=$?
 
-if [ "$STATUS" -eq "0" ]; then
-      ./target/bin/ic-cdk-optimizer \
-      ./target/$TARGET/release/example.wasm \
-      -o ./target/$TARGET/release/example.wasm
-  true
-else
-  echo Could not install ic-cdk-optimizer.
-  false
-fi
+# if [ "$STATUS" -eq "0" ]; then
+#       ./target/bin/ic-cdk-optimizer \
+#       ./target/$TARGET/release/example.wasm \
+#       -o ./target/$TARGET/release/example.wasm
+#   true
+# else
+#   echo Could not install ic-cdk-optimizer.
+#   false
+# fi
 
 popd
