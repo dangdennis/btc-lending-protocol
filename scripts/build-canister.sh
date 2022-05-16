@@ -10,7 +10,7 @@ pushd $SCRIPT_DIR/..
 # Otherwise the wasm compilation of rust-secp256k1 will fail.
 if [ "$(uname)" == "Darwin" ]; then
   # On macs we need to use the brew versions
-  AR="/usr/local/opt/llvm/bin/llvm-ar" CC="/usr/local/opt/llvm/bin/clang" cargo build --bin canister --target $TARGET --release
+  sudo AR="/usr/local/opt/llvm/bin/llvm-ar" CC="/usr/local/opt/llvm/bin/clang" cargo build --bin canister --target $TARGET --release
 else
   cargo build --bin canister --target $TARGET --release
 fi

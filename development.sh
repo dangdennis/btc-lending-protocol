@@ -18,6 +18,10 @@ dfx deploy btc-example-rust --no-wallet --argument "(record { bitcoin_canister_i
 export CANISTER_BTC_ADDRESS=mmdoAzumgjbvAJjVGg7fkQmtvDNFd2wjjH
 #9
 docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf sendtoaddress $CANISTER_BTC_ADDRESS 10 "" "" true true null "unset" null 1.1
+#10
+cargo run --features="tokio candid ic-agent garcon tonic tonic-build" --bin adapter-shim $(dfx canister --no-wallet id btc)
+#11
+docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddress 1 $BTC_ADDRESS
 
 # helpers
 docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf getbalance
