@@ -1,5 +1,8 @@
 # only run this script cmd by cmd. it's just instructional steps
 
+# if you have issues regarding brew with apple silicon, alias brew with arch -x86_64. 
+# see https://www.notion.so/Bitcoin-Liquidity-Pool-93f5baa018ae4056926f13caa3e96375
+
 #1
 docker compose up
 #2
@@ -7,19 +10,19 @@ dfx start --clean
 #3
 dfx deploy btc --no-wallet
 #4
-docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf createwallet mywallet
+cargo run --features="tokio candid ic-agent garcon tonic tonic-build" --bin adapter-shim $(dfx canister id btc)
 #5
-export BTC_ADDRESS=$(docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf getnewaddress | tr -d '\r')
+docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf createwallet mywallet
 #6
-docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddress 101 $BTC_ADDRESS
+export BTC_ADDRESS=$(docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf getnewaddress | tr -d '\r')
 #7
-dfx deploy btc-example-rust --no-wallet --argument "(record { bitcoin_canister_id = principal \"$(dfx canister id btc)\" })" --mode=reinstall
+docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddress 101 $BTC_ADDRESS
 #8
-export CANISTER_BTC_ADDRESS=mmdoAzumgjbvAJjVGg7fkQmtvDNFd2wjjH
+dfx deploy btc-example-rust --no-wallet --argument "(record { bitcoin_canister_id = principal \"$(dfx canister id btc)\" })" --mode=reinstall
 #9
-docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf sendtoaddress $CANISTER_BTC_ADDRESS 10 "" "" true true null "unset" null 1.1
+export CANISTER_BTC_ADDRESS=mmdoAzumgjbvAJjVGg7fkQmtvDNFd2wjjH
 #10
-cargo run --features="tokio candid ic-agent garcon tonic tonic-build" --bin adapter-shim $(dfx canister --no-wallet id btc)
+docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf sendtoaddress $CANISTER_BTC_ADDRESS 10 "" "" true true null "unset" null 1.1
 #11
 docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddress 1 $BTC_ADDRESS
 
