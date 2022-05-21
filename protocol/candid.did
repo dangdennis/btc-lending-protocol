@@ -1,25 +1,33 @@
-type Satoshi = nat64;
+
+
+type VaultId = nat32;
+
+type Vault = record {
+  id: VaultId;
+  collateral: Collateral;
+  owner: principal;
+  maintenance_ratio: nat64;
+  debt: nat64;
+  liquidation_price: nat64;
+  state: VaultState;
+};
+
+type Collateral = variant {
+  BTC;
+  ICP;
+};
+
+type VaultState = variant {
+  Redeemed;
+  Liquidated;
+  Open;
+};
 
 type InitPayload = record {
   bitcoin_canister_id : principal;
 };
 
-type OutPoint = record {
-  txid : blob;
-  vout : nat32
-};
-
-type Utxo = record {
-  outpoint: OutPoint;
-  value: Satoshi;
-  height: nat32;
-  confirmations: nat32;
-};
-
-service: () -> {
-  btc_address: () -> (text) query;
-  balance: () -> (nat64);
-  get_utxos: () -> (vec Utxo);
-  send: (amount: nat64, destination: text) -> ();
+service: (InitPayload) -> {
+  create_vault: () -> (nat32);
+  get_vault: (vault_id: VaultId) -> (opt Vault) query;
 }
-

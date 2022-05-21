@@ -18,6 +18,13 @@
       "candid": "crypto_oracle/candid.did",
       "type": "motoko"
     },
+    "internet_identity": {
+      "type": "custom",
+      "candid": "internet_identity/internet_identity.did",
+      "wasm": "internet_identity/internet_identity.wasm"
+    }
+  },
+  "example_canisters": {
     "btc-example-rust": {
       "type": "custom",
       "candid": "examples/rust/candid.did",

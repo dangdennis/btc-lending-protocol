@@ -8,7 +8,7 @@ docker compose up
 #2
 dfx start --clean
 #3
-dfx deploy btc --no-wallet
+dfx deploy btc
 #4
 cargo run --features="tokio candid ic-agent garcon tonic tonic-build" --bin adapter-shim $(dfx canister id btc)
 #5
@@ -18,7 +18,7 @@ export BTC_ADDRESS=$(docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoi
 #7
 docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddress 101 $BTC_ADDRESS
 #8
-dfx deploy protocol --no-wallet --argument "(record { bitcoin_canister_id = principal \"$(dfx canister id btc)\" })" --mode=reinstall   
+dfx deploy protocol --argument "(record { bitcoin_canister_id = principal \"$(dfx canister id btc)\" })" --mode=reinstall   
 #9
 export CANISTER_BTC_ADDRESS=mmdoAzumgjbvAJjVGg7fkQmtvDNFd2wjjH
 #10
