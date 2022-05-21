@@ -1,0 +1,59 @@
+type anon_class_8_1 = 
+ service {
+   assign_owner_role: () -> ();
+   assign_writer_role: (principal) -> ();
+   get_map: () -> (AssocList_1);
+   get_map_field_value: (text, text) -> (opt float64);
+   get_map_value: (text) -> (opt AssocList);
+   get_roles: () -> (List);
+   my_role: () -> (opt Role);
+   revoke_writer_role: (principal) -> ();
+   self_destruct: () -> ();
+   update_map_value: (text, text, float64) -> ();
+ };
+type Role = 
+ variant {
+   owner;
+   writer;
+ };
+type List_2 = 
+ opt record {
+       record {
+         text;
+         AssocList;
+       };
+       List_2;
+     };
+type List_1 = 
+ opt record {
+       record {
+         text;
+         float64;
+       };
+       List_1;
+     };
+type List = 
+ opt record {
+       record {
+         principal;
+         Role;
+       };
+       List;
+     };
+type AssocList_1 = 
+ opt record {
+       record {
+         text;
+         AssocList;
+       };
+       List_2;
+     };
+type AssocList = 
+ opt record {
+       record {
+         text;
+         float64;
+       };
+       List_1;
+     };
+service : () -> anon_class_8_1

@@ -3,9 +3,14 @@
   "canisters": {
     "btc": {
       "type": "custom",
-      "candid": "canister/candid.did",
+      "candid": "btc/candid.did",
       "wasm": "target/wasm32-unknown-unknown/release/canister.wasm",
       "build": "scripts/build-canister.sh"
+    },
+    "crypto_oracle": {
+      "main": "crypto_oracle/main.mo",
+      "candid": "crypto_oracle/candid.did",
+      "type": "motoko"
     },
     "btc-example-rust": {
       "type": "custom",
@@ -23,9 +28,7 @@
       "type": "motoko",
       "candid": "examples/motoko/candid.did",
       "main": "examples/motoko/src/Main.mo",
-      "dependencies": [
-        "btc-example-common"
-      ]
+      "dependencies": ["btc-example-common"]
     }
   },
   "defaults": {

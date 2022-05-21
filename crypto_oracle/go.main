@@ -1,0 +1,45 @@
+package main
+
+import (
+	"os"
+	"strings"
+	"time"
+
+	framework "github.com/hyplabs/dfinity-oracle-framework"
+	"github.com/hyplabs/dfinity-oracle-framework/models"
+)
+
+func generateEndpoints(coinName string) []models.Endpoint {
+	coinMarketCapAPIKey := os.Getenv("COINMARKETCAP_API_KEY")
+	lowercaseCoinName := strings.ToLower(coinName)
+	return []models.Endpoint{
+		{
+			Endpoint: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?slug=" + lowercaseCoinName + "&CMC_PRO_API_KEY=" + coinMarketCapAPIKey,
+			JSONPaths: map[string]string{
+				"usd_per_token": "$.data..quote.USD.price",
+			},
+		},
+		// {
+		// 	Endpoint: "https://api.coingecko.com/api/v3/simple/price?" + lowercaseCoinName + "&vs_currencies=usd",
+		// 	JSONPaths: map[string]string{
+		// 		"usd_per_token": "$." + lowercaseCoinName + ".usd",
+		// 	},
+		// },
+	}
+}
+
+func main() {
+	config := models.Config{
+		CanisterName:   "crypto_oracle",
+		UpdateInterval: 5 * time.Minute,
+	}
+
+	engine := models.Engine{
+		Metadata: []models.MappingMetadata{
+			{Key: "Bitcoin", Endpoints: generateEndpoints("Bitcoin")},
+		},
+	}
+
+	oracle := framework.NewOracle(&config, &engine)
+	oracle.Run()
+}
