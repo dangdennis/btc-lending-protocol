@@ -18,7 +18,7 @@ export BTC_ADDRESS=$(docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoi
 #7
 docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddress 101 $BTC_ADDRESS
 #8
-dfx deploy btc-example-rust --no-wallet --argument "(record { bitcoin_canister_id = principal \"$(dfx canister id btc)\" })" --mode=reinstall
+dfx deploy protocol --no-wallet --argument "(record { bitcoin_canister_id = principal \"$(dfx canister id btc)\" })" --mode=reinstall   
 #9
 export CANISTER_BTC_ADDRESS=mmdoAzumgjbvAJjVGg7fkQmtvDNFd2wjjH
 #10
@@ -29,7 +29,7 @@ docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddr
 # helpers
 docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf getbalance
 docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddress 1 $BTC_ADDRESS
-dfx canister call btc-example-rust btc_address
-dfx canister call btc-example-rust balance  
-dfx canister call btc-example-rust get_utxos
-dfx canister call btc-example-rust send "(1_0000_0000, \"$CANISTER_BTC_ADDRESS\")"
+dfx canister call protocol btc_address
+dfx canister call protocol balance  
+dfx canister call protocol get_utxos
+dfx canister call protocol send "(1_0000_0000, \"$CANISTER_BTC_ADDRESS\")"

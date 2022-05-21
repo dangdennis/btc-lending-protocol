@@ -32,7 +32,7 @@ path = "src/sync_demo.rs"
 required-features = ["tonic", "tonic-build", "tokio"]
 
 [[bin]]
-name = "canister"
+name = "btc"
 path = "src/main.rs"
 
 [[bin]]

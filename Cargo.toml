@@ -1,8 +1,8 @@
 [workspace]
 
 members = [
-    "canister",
+    "btc",
+    "protocol",
     "examples/common",
-    "examples/rust",
     "types",
 ]
