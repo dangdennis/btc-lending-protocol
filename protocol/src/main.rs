@@ -8,7 +8,7 @@ use types::{Vault, VaultId};
 mod types;
 mod vault;
 
-use vault::VaultManager;
+use vault::{CreateVaultInput, VaultManager};
 
 thread_local! {
     static BTC_CANISTER_ID: RefCell<Principal> = RefCell::new(Principal::management_canister());
@@ -37,13 +37,10 @@ fn init(payload: InitPayload) {
     });
 }
 
-#[derive(CandidType, Deserialize)]
-struct CreateVaultInput {}
-
 #[update]
-fn create_vault(_input: CreateVaultInput) -> u32 {
+fn create_vault(input: CreateVaultInput) -> VaultId {
     let caller = caller();
-    STATE.with(|s| s.borrow_mut().vault_manager.create_vault(caller))
+    STATE.with(|s| s.borrow_mut().vault_manager.create_vault(caller, input))
 }
 
 #[query]

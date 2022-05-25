@@ -23,11 +23,13 @@ type VaultState = variant {
   Open;
 };
 
+type CreateVaultInput = record {};
+
 type InitPayload = record {
   bitcoin_canister_id : principal;
 };
 
 service: (InitPayload) -> {
-  create_vault: () -> (nat32);
+  create_vault: (CreateVaultInput) -> (VaultId);
   get_vault: (vault_id: VaultId) -> (opt Vault) query;
 }
