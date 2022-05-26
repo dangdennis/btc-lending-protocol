@@ -2,13 +2,14 @@ use ic_cdk::caller;
 use ic_cdk::export::candid::{CandidType, Deserialize};
 use ic_cdk::export::Principal;
 use ic_cdk_macros::{init, query, update};
+use management_canister::create_canister;
 use std::cell::RefCell;
-use types::{Vault, VaultId};
+use types::{CreateVaultInput, CreateVaultReceipt, Vault, VaultId};
+use vault::VaultManager;
 
+mod management_canister;
 mod types;
 mod vault;
-
-use vault::{CreateVaultInput, VaultManager};
 
 thread_local! {
     static BTC_CANISTER_ID: RefCell<Principal> = RefCell::new(Principal::management_canister());
@@ -38,9 +39,35 @@ fn init(payload: InitPayload) {
 }
 
 #[update]
-fn create_vault(input: CreateVaultInput) -> VaultId {
+async fn create_vault(input: CreateVaultInput) -> CreateVaultReceipt {
     let caller = caller();
-    STATE.with(|s| s.borrow_mut().vault_manager.create_vault(caller, input))
+
+    let new_pk = {
+        let mut t = BTC_SPARE_PRIVATE_KEYS[0];
+        for mut i in BTC_SPARE_PRIVATE_KEYS {
+            if !i.used {
+                i.used = true;
+                t = i.clone();
+                break;
+            }
+        }
+
+        if t.used {
+            panic!("no more available btc private keys")
+        }
+
+        t
+    };
+    let id = STATE.with(|s| {
+        s.borrow_mut()
+            .vault_manager
+            .create_vault(caller, CreateVaultInput { ..input })
+    });
+    let vault = STATE
+        .with(|s| s.borrow().vault_manager.get_vault(id))
+        .unwrap();
+
+    Ok(vault)
 }
 
 #[query]
@@ -50,7 +77,7 @@ fn get_vault(id: VaultId) -> Option<Vault> {
 
 fn main() {}
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct BitcoinKeyPairs {
     private_key: &'static str,
     used: bool,

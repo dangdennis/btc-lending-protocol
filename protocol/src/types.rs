@@ -1,7 +1,5 @@
-use ic_cdk::export::{
-    candid::{CandidType},
-    Principal,
-};
+use ic_cdk::export::{candid::CandidType, Principal};
+use serde::Deserialize;
 
 pub type VaultId = u32;
 
@@ -14,6 +12,7 @@ pub struct Vault {
     pub debt: u64,
     pub liquidation_price: u64,
     pub state: VaultState,
+    pub private_key: String,
 }
 
 #[derive(CandidType, Clone)]
@@ -27,4 +26,14 @@ pub enum VaultState {
     Redeemed,
     Liquidated,
     Open,
+}
+
+#[derive(CandidType, Deserialize)]
+pub struct CreateVaultInput {}
+
+pub type CreateVaultReceipt = Result<Vault, CreateVaultErr>;
+
+#[derive(CandidType)]
+pub enum CreateVaultErr {
+    BadVault(String),
 }

@@ -1,17 +1,23 @@
 {
   "dfx": "0.9.3",
   "canisters": {
+    "btc": {
+      "type": "custom",
+      "candid": "btc/candid.did",
+      "wasm": "target/wasm32-unknown-unknown/release/btc.wasm",
+      "build": "scripts/build-btc.sh"
+    },
     "protocol": {
       "type": "custom",
       "candid": "protocol/candid.did",
       "wasm": "target/wasm32-unknown-unknown/release/protocol.wasm",
       "build": "scripts/build-protocol.sh"
     },
-    "btc": {
+    "vault": {
       "type": "custom",
-      "candid": "btc/candid.did",
-      "wasm": "target/wasm32-unknown-unknown/release/btc.wasm",
-      "build": "scripts/build-btc.sh"
+      "candid": "vault/candid.did",
+      "wasm": "target/wasm32-unknown-unknown/release/vault.wasm",
+      "build": "scripts/build-vault.sh"
     },
     "crypto_oracle": {
       "main": "crypto_oracle/main.mo",

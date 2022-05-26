@@ -25,11 +25,20 @@ type VaultState = variant {
 
 type CreateVaultInput = record {};
 
+type CreateVaultErr = variant {
+  BadVault: text
+};
+
+type CreateVaultReceipt = variant {
+  Err: CreateVaultErr;
+  Ok: Vault;
+};
+
 type InitPayload = record {
   bitcoin_canister_id : principal;
 };
 
 service: (InitPayload) -> {
-  create_vault: (CreateVaultInput) -> (VaultId);
+  create_vault: (CreateVaultInput) -> (CreateVaultReceipt);
   get_vault: (vault_id: VaultId) -> (opt Vault) query;
 }

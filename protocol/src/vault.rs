@@ -1,11 +1,8 @@
+use crate::types::{Collateral, CreateVaultInput};
+use crate::types::{Vault, VaultId, VaultState};
+use ic_cdk::export::Principal;
 use std::collections::HashMap;
 
-use ic_cdk::export::Principal;
-use ic_cdk::export::candid::CandidType;
-use serde::Deserialize;
-
-use crate::types::Collateral;
-use crate::types::{Vault, VaultId, VaultState};
 type Vaults = HashMap<VaultId, Vault>;
 
 #[derive(Default, Clone)]
@@ -14,13 +11,10 @@ pub struct VaultManager {
     pub vaults: Vaults,
 }
 
-#[derive(CandidType, Deserialize)]
-pub struct CreateVaultInput {}
-
 impl VaultManager {
-    pub fn create_vault(&mut self, principal: Principal, input: CreateVaultInput) -> VaultId {
+    pub fn create_vault(&mut self, principal: Principal, _input: CreateVaultInput) -> VaultId {
         let id = self.next_id();
-        println!("{}", id);
+
         self.vaults.insert(
             id,
             Vault {

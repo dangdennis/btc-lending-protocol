@@ -2317,6 +2317,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4ae116fef2b7fea257ed6440d3cfcff7f190865f170cdad00bb6465bf18ecba"
 
 [[package]]
+name = "vault"
+version = "0.1.0"
+dependencies = [
+ "bitcoin",
+ "example-common",
+ "hex",
+ "ic-btc-types",
+ "ic-cdk",
+ "ic-cdk-macros",
+ "num-bigint",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
 name = "vcpkg"
 version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
