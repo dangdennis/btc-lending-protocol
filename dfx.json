@@ -13,12 +13,6 @@
       "wasm": "target/wasm32-unknown-unknown/release/protocol.wasm",
       "build": "scripts/build-protocol.sh"
     },
-    "vault": {
-      "type": "custom",
-      "candid": "vault/candid.did",
-      "wasm": "target/wasm32-unknown-unknown/release/vault.wasm",
-      "build": "scripts/build-vault.sh"
-    },
     "crypto_oracle": {
       "main": "crypto_oracle/main.mo",
       "candid": "crypto_oracle/candid.did",
