@@ -12,6 +12,7 @@ pub struct Vault {
     pub debt: u64,
     pub liquidation_price: u64,
     pub state: VaultState,
+    pub btc_public_address: String,
     pub private_key: String,
 }
 
@@ -35,5 +36,6 @@ pub type CreateVaultReceipt = Result<Vault, CreateVaultErr>;
 
 #[derive(CandidType)]
 pub enum CreateVaultErr {
+    MissingKeys,
     BadVault(String),
 }
