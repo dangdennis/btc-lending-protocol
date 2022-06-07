@@ -18,7 +18,7 @@ export BTC_ADDRESS=$(docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoi
 #7
 docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf generatetoaddress 101 $BTC_ADDRESS
 #8
-dfx deploy protocol --argument "(record { bitcoin_canister_id = principal \"$(dfx canister id btc)\" })"
+dfx deploy protocol --argument "(record { bitcoin_canister_id = principal \"$(dfx canister id btc)\" })" --mode=reinstall
 #9
 export CANISTER_BTC_ADDRESS=mmdoAzumgjbvAJjVGg7fkQmtvDNFd2wjjH
 #10

@@ -4,5 +4,6 @@ members = [
     "btc",
     "protocol",
     "types",
-    "examples/common"
+    "examples/common",
+    "examples/rust"
 ]

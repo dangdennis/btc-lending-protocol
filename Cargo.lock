@@ -393,6 +393,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "example"
+version = "0.1.0"
+dependencies = [
+ "bitcoin",
+ "example-common",
+ "hex",
+ "ic-btc-types",
+ "ic-cdk",
+ "ic-cdk-macros",
+ "serde",
+]
+
+[[package]]
 name = "example-common"
 version = "0.1.0"
 dependencies = [

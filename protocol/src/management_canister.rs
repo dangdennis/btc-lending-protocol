@@ -18,7 +18,7 @@ pub async fn create_canister() -> Result<Principal, CreateVaultErr> {
         1000000,
     )
     .await;
-    let payload = r.map_err(|err| CreateVaultErr::BadVault(err.1))?;
+    let payload = r.map_err(|err| CreateVaultErr::Bad(err.1))?;
 
     ic_cdk::println!("creating new canister {:#?}", payload.0.canister_id);
 

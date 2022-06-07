@@ -4,7 +4,7 @@ use ic_cdk::export::Principal;
 use ic_cdk_macros::{init, query, update};
 use std::cell::RefCell;
 use std::collections::HashMap;
-use types::{CreateVaultInput, CreateVaultReceipt, Vault, VaultId};
+use types::{CreateVaultErr, CreateVaultInput, CreateVaultReceipt, Vault, VaultId};
 use vault::{VaultManager, BTC_SPARE_PRIVATE_KEYS};
 
 mod management_canister;
@@ -36,6 +36,7 @@ fn init(payload: InitPayload) {
     STATE.with(|s| {
         s.borrow_mut().owner = Some(caller());
     });
+
     STATE.with(|s| {
         s.borrow_mut().vault_manager = VaultManager {
             spare_keys: BTC_SPARE_PRIVATE_KEYS.to_vec(),
@@ -46,19 +47,22 @@ fn init(payload: InitPayload) {
 }
 
 #[update]
-async fn create_vault(input: CreateVaultInput) -> CreateVaultReceipt {
+async fn create_vault(input: CreateVaultInput) -> Option<Vault> {
     let caller = caller();
 
-    let id = STATE.with(|s| {
+    let new_vault = STATE.with(|s| {
         s.borrow_mut()
             .vault_manager
             .create_vault(caller, CreateVaultInput { ..input })
     });
-    let vault = STATE
-        .with(|s| s.borrow().vault_manager.get_vault(id))
-        .unwrap();
 
-    Ok(vault)
+    match new_vault {
+        Ok(v) => Some(v),
+        Err(err) => {
+            ic_cdk::eprintln!("error creating vault {:?}", err);
+            None
+        },
+    }
 }
 
 #[query]

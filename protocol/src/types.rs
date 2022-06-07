@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 pub type VaultId = u32;
 
-#[derive(CandidType, Clone)]
+#[derive(CandidType, Clone, Debug)]
 pub struct Vault {
     pub id: VaultId,
     pub collateral: Collateral,
@@ -12,21 +12,22 @@ pub struct Vault {
     pub debt: u64,
     pub liquidation_price: u64,
     pub state: VaultState,
-    pub btc_public_address: String,
+    /// @todo remove once vaults can generate ecdsa
     pub private_key: String,
 }
 
-#[derive(CandidType, Clone)]
+#[derive(CandidType, Clone, Debug)]
 pub enum Collateral {
     BTC,
     ICP,
 }
 
-#[derive(CandidType, Clone)]
+#[derive(CandidType, Clone, Debug)]
 pub enum VaultState {
+    Open,
+    Borrowed,
     Redeemed,
     Liquidated,
-    Open,
 }
 
 #[derive(CandidType, Deserialize)]
@@ -34,8 +35,9 @@ pub struct CreateVaultInput {}
 
 pub type CreateVaultReceipt = Result<Vault, CreateVaultErr>;
 
-#[derive(CandidType)]
+#[derive(CandidType, Debug)]
 pub enum CreateVaultErr {
     MissingKeys,
-    BadVault(String),
+    Bad(String),
+    Unknown
 }
