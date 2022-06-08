@@ -33,41 +33,33 @@ impl VaultManager {
 
         ic_cdk::println!("spare keys {:?}", self.spare_keys);
 
-        let pk = self.spare_keys.pop().ok_or(CreateVaultErr::MissingKeys)?;
+        let pk = self
+            .spare_keys
+            .pop()
+            .ok_or(CreateVaultErr::MissingPrivateKey)?;
 
         ic_cdk::println!("using key {:?}", pk);
 
-        let vault = Ok(Vault {
+        match self.vaults.insert(
             id,
-            collateral: Collateral::BTC,
-            debt: 100,
-            liquidation_price: 500,
-            maintenance_ratio: 100,
-            owner: principal,
-            state: VaultState::Open,
-            private_key: pk.to_string(),
-        });
-
-        // let vault = self
-        //     .vaults
-        //     .insert(
-        //         id,
-        //         Vault {
-        //             id,
-        //             collateral: Collateral::BTC,
-        //             debt: 100,
-        //             liquidation_price: 500,
-        //             maintenance_ratio: 100,
-        //             owner: principal,
-        //             state: VaultState::Open,
-        //             private_key: pk.to_string(),
-        //         },
-        //     )
-        //     .ok_or(CreateVaultErr::Bad("Unable to insert vault".to_string()));
-
-        ic_cdk::println!("{:?}", vault);
-
-        vault
+            Vault {
+                id,
+                collateral: Collateral::BTC,
+                debt: 100,
+                liquidation_price: 500,
+                maintenance_ratio: 100,
+                owner: principal,
+                state: VaultState::Open,
+                private_key: pk.to_string(),
+            },
+        ) {
+            Some(_) => Err(CreateVaultErr::Conflict),
+            None => self
+                .vaults
+                .get(&id)
+                .ok_or(CreateVaultErr::NotFound)
+                .and_then(|v| Ok(v.clone())),
+        }
     }
 
     pub fn get_vault(&self, id: VaultId) -> Option<Vault> {

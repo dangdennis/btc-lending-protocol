@@ -47,7 +47,7 @@ fn init(payload: InitPayload) {
 }
 
 #[update]
-async fn create_vault(input: CreateVaultInput) -> Option<Vault> {
+async fn create_vault(input: CreateVaultInput) -> CreateVaultReceipt {
     let caller = caller();
 
     let new_vault = STATE.with(|s| {
@@ -56,13 +56,7 @@ async fn create_vault(input: CreateVaultInput) -> Option<Vault> {
             .create_vault(caller, CreateVaultInput { ..input })
     });
 
-    match new_vault {
-        Ok(v) => Some(v),
-        Err(err) => {
-            ic_cdk::eprintln!("error creating vault {:?}", err);
-            None
-        },
-    }
+    new_vault
 }
 
 #[query]

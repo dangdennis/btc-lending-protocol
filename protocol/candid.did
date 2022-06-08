@@ -26,8 +26,10 @@ type VaultState = variant {
 type CreateVaultInput = record {};
 
 type CreateVaultErr = variant {
-  BadVault: text;
-  Bad;
+  MissingPrivateKey;
+  NotFound;
+  Conflict;
+  Bad: text;
   Unknown;
 };
 
@@ -41,6 +43,6 @@ type InitPayload = record {
 };
 
 service: (InitPayload) -> {
-  create_vault: (CreateVaultInput) -> (opt Vault);
+  create_vault: (CreateVaultInput) -> (CreateVaultReceipt);
   get_vault: (vault_id: VaultId) -> (opt Vault) query;
 }

@@ -37,7 +37,9 @@ pub type CreateVaultReceipt = Result<Vault, CreateVaultErr>;
 
 #[derive(CandidType, Debug)]
 pub enum CreateVaultErr {
-    MissingKeys,
+    MissingPrivateKey,
+    NotFound,
+    Conflict,
     Bad(String),
     Unknown
 }
