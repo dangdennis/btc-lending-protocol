@@ -3,12 +3,13 @@ use ic_cdk::export::candid::{CandidType, Deserialize};
 use ic_cdk::export::Principal;
 use ic_cdk_macros::{init, query, update};
 use std::cell::RefCell;
-use types::{Vault, VaultId};
+use std::collections::HashMap;
+use types::{CreateVaultErr, CreateVaultInput, CreateVaultReceipt, Vault, VaultId};
+use vault::{VaultManager, BTC_SPARE_PRIVATE_KEYS};
 
+mod management_canister;
 mod types;
 mod vault;
-
-use vault::VaultManager;
 
 thread_local! {
     static BTC_CANISTER_ID: RefCell<Principal> = RefCell::new(Principal::management_canister());
@@ -35,15 +36,27 @@ fn init(payload: InitPayload) {
     STATE.with(|s| {
         s.borrow_mut().owner = Some(caller());
     });
+
+    STATE.with(|s| {
+        s.borrow_mut().vault_manager = VaultManager {
+            spare_keys: BTC_SPARE_PRIVATE_KEYS.to_vec(),
+            next_id: 0,
+            vaults: HashMap::new(),
+        }
+    });
 }
 
-#[derive(CandidType, Deserialize)]
-struct CreateVaultInput {}
-
 #[update]
-fn create_vault(_input: CreateVaultInput) -> u32 {
+async fn create_vault(input: CreateVaultInput) -> CreateVaultReceipt {
     let caller = caller();
-    STATE.with(|s| s.borrow_mut().vault_manager.create_vault(caller))
+
+    let new_vault = STATE.with(|s| {
+        s.borrow_mut()
+            .vault_manager
+            .create_vault(caller, CreateVaultInput { ..input })
+    });
+
+    new_vault
 }
 
 #[query]
@@ -52,32 +65,3 @@ fn get_vault(id: VaultId) -> Option<Vault> {
 }
 
 fn main() {}
-
-#[derive(Debug)]
-pub struct BitcoinKeyPairs {
-    private_key: &'static str,
-    used: bool,
-}
-
-const BTC_SPARE_PRIVATE_KEYS: [BitcoinKeyPairs; 5] = [
-    BitcoinKeyPairs {
-        private_key: "L2C1QgyKqNgfV7BpEPAm6PVn2xW8zpXq6MojSbWdH18nGQF2wGsT",
-        used: false,
-    },
-    BitcoinKeyPairs {
-        private_key: "Ky3BLwXx7ouVJSQ7P28KFTsxfH6RN86xrdqYdzSe7m2p3gp83dza",
-        used: false,
-    },
-    BitcoinKeyPairs {
-        private_key: "L19t4zqFrzfmtgzFd1uZmeKY8UrXzXuHzmZUjswZKYUuUtkmiaBE",
-        used: false,
-    },
-    BitcoinKeyPairs {
-        private_key: "KxarCFNSxu1kbMfxqJ1MPxtghsamnos62vV1XG9HqvpHSxdYkXU5",
-        used: false,
-    },
-    BitcoinKeyPairs {
-        private_key: "KwyPiCJvGTHfVnnwittkNWxQVQr1zK9gVN2cjJfW4W9sER97W3Dc",
-        used: false,
-    },
-];

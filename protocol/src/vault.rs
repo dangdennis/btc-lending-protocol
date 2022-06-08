@@ -1,22 +1,46 @@
+use crate::types::{
+    Collateral, CreateVaultErr, CreateVaultInput, CreateVaultReceipt, Vault, VaultId, VaultState,
+};
+use bitcoin::{secp256k1, Address, Network, PrivateKey};
+use ic_cdk::export::Principal;
 use std::collections::HashMap;
 
-use ic_cdk::export::Principal;
-
-use crate::types::Collateral;
-use crate::types::{Vault, VaultId, VaultState};
 type Vaults = HashMap<VaultId, Vault>;
+
+impl Vault {
+    /// Returns the regtest P2PKH address derived from the private key.
+    pub fn btc_address(&self, network: Network) -> Address {
+        let private_key = PrivateKey::from_wif(&self.private_key).unwrap();
+        let public_key = private_key.public_key(&secp256k1::Secp256k1::new());
+        Address::p2pkh(&public_key, network)
+    }
+}
 
 #[derive(Default, Clone)]
 pub struct VaultManager {
     pub next_id: VaultId,
     pub vaults: Vaults,
+    pub spare_keys: Vec<&'static str>,
 }
 
 impl VaultManager {
-    pub fn create_vault(&mut self, principal: Principal) -> VaultId {
+    pub fn create_vault(
+        &mut self,
+        principal: Principal,
+        _input: CreateVaultInput,
+    ) -> CreateVaultReceipt {
         let id = self.next_id();
-        println!("{}", id);
-        self.vaults.insert(
+
+        ic_cdk::println!("spare keys {:?}", self.spare_keys);
+
+        let pk = self
+            .spare_keys
+            .pop()
+            .ok_or(CreateVaultErr::MissingPrivateKey)?;
+
+        ic_cdk::println!("using key {:?}", pk);
+
+        match self.vaults.insert(
             id,
             Vault {
                 id,
@@ -26,9 +50,16 @@ impl VaultManager {
                 maintenance_ratio: 100,
                 owner: principal,
                 state: VaultState::Open,
+                private_key: pk.to_string(),
             },
-        );
-        id
+        ) {
+            Some(_) => Err(CreateVaultErr::Conflict),
+            None => self
+                .vaults
+                .get(&id)
+                .ok_or(CreateVaultErr::NotFound)
+                .and_then(|v| Ok(v.clone())),
+        }
     }
 
     pub fn get_vault(&self, id: VaultId) -> Option<Vault> {
@@ -40,3 +71,11 @@ impl VaultManager {
         self.next_id
     }
 }
+
+pub const BTC_SPARE_PRIVATE_KEYS: [&'static str; 5] = [
+    "L2C1QgyKqNgfV7BpEPAm6PVn2xW8zpXq6MojSbWdH18nGQF2wGsT",
+    "Ky3BLwXx7ouVJSQ7P28KFTsxfH6RN86xrdqYdzSe7m2p3gp83dza",
+    "L19t4zqFrzfmtgzFd1uZmeKY8UrXzXuHzmZUjswZKYUuUtkmiaBE",
+    "KxarCFNSxu1kbMfxqJ1MPxtghsamnos62vV1XG9HqvpHSxdYkXU5",
+    "KwyPiCJvGTHfVnnwittkNWxQVQr1zK9gVN2cjJfW4W9sER97W3Dc",
+];
