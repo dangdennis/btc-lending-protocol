@@ -1,15 +1,19 @@
 use ic_cdk::caller;
-use ic_cdk::export::candid::{CandidType, Deserialize};
+use ic_cdk::export::candid::{CandidType, Deserialize, Nat};
 use ic_cdk::export::Principal;
 use ic_cdk_macros::{init, query, update};
+use pool::{PoolManager, PoolType};
 use std::cell::RefCell;
 use std::collections::HashMap;
-use types::{CreateVaultErr, CreateVaultInput, CreateVaultReceipt, Vault, VaultId};
+use types::{CreateVaultInput, CreateVaultReceipt, Vault, VaultId};
 use vault::{VaultManager, BTC_SPARE_PRIVATE_KEYS};
+use wallet::WalletManager;
 
 mod management_canister;
+mod pool;
 mod types;
 mod vault;
+mod wallet;
 
 thread_local! {
     static BTC_CANISTER_ID: RefCell<Principal> = RefCell::new(Principal::management_canister());
@@ -20,6 +24,8 @@ thread_local! {
 pub struct State {
     owner: Option<Principal>,
     vault_manager: VaultManager,
+    pool_manager: PoolManager,
+    wallet_manager: WalletManager,
 }
 
 #[derive(CandidType, Deserialize)]
@@ -62,6 +68,21 @@ async fn create_vault(input: CreateVaultInput) -> CreateVaultReceipt {
 #[query]
 fn get_vault(id: VaultId) -> Option<Vault> {
     STATE.with(|s| s.borrow().vault_manager.get_vault(id))
+}
+
+#[query]
+fn get_tvl(pool_type: PoolType) -> u64 {
+    STATE.with(|s| s.borrow().pool_manager.get_tvl(pool_type))
+}
+
+#[query]
+fn get_apr(pool_type: PoolType) -> u64 {
+    STATE.with(|s| s.borrow().pool_manager.get_apr(pool_type))
+}
+
+#[query]
+fn get_stake(_pool_type: PoolType) -> u64 {
+    unimplemented!()
 }
 
 fn main() {}
