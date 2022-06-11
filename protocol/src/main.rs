@@ -1,11 +1,11 @@
 use ic_cdk::caller;
-use ic_cdk::export::candid::{CandidType, Deserialize, Nat};
+use ic_cdk::export::candid::{CandidType, Deserialize};
 use ic_cdk::export::Principal;
 use ic_cdk_macros::{init, query, update};
 use pool::{PoolManager, PoolType};
 use std::cell::RefCell;
 use std::collections::HashMap;
-use types::{CreateVaultInput, CreateVaultReceipt, Vault, VaultId};
+use types::{ClaimVaultReceipt, CreateVaultInput, CreateVaultReceipt, Vault, VaultId};
 use vault::{VaultManager, BTC_SPARE_PRIVATE_KEYS};
 use wallet::WalletManager;
 
@@ -83,6 +83,15 @@ fn get_apr(pool_type: PoolType) -> u64 {
 #[query]
 fn get_stake(_pool_type: PoolType) -> u64 {
     unimplemented!()
+}
+
+#[query]
+fn claim_vault(id: VaultId) -> ClaimVaultReceipt {
+    STATE.with(|s| {
+        let wallet_manager = &s.borrow().wallet_manager;
+        s.borrow().vault_manager.claim_vault(wallet_manager, id)?;
+        Ok(0)
+    })
 }
 
 fn main() {}

@@ -1,5 +1,8 @@
-use crate::types::{
-    Collateral, CreateVaultErr, CreateVaultInput, CreateVaultReceipt, Vault, VaultId, VaultState,
+use crate::{
+    types::{
+        Collateral, CreateVaultInput, CreateVaultReceipt, Vault, VaultErr, VaultId, VaultState,
+    },
+    wallet::WalletManager,
 };
 use bitcoin::{secp256k1, Address, Network, PrivateKey};
 use ic_cdk::export::Principal;
@@ -24,6 +27,8 @@ pub struct VaultManager {
 }
 
 impl VaultManager {
+    /// todo: how to prevent excessive vault creation attacks, without anyone actually claiming tokens later
+    /// alternatively, we don't use direct bitcoin. but instead, use "ckBTC", some ICP wrapped bitcoin.
     pub fn create_vault(
         &mut self,
         principal: Principal,
@@ -33,10 +38,7 @@ impl VaultManager {
 
         ic_cdk::println!("spare keys {:?}", self.spare_keys);
 
-        let pk = self
-            .spare_keys
-            .pop()
-            .ok_or(CreateVaultErr::MissingPrivateKey)?;
+        let pk = self.spare_keys.pop().ok_or(VaultErr::MissingPrivateKey)?;
 
         ic_cdk::println!("using key {:?}", pk);
 
@@ -48,16 +50,17 @@ impl VaultManager {
                 debt: 100,
                 liquidation_price: 500,
                 maintenance_ratio: 100,
+                interest_rate: 0,
                 owner: principal,
                 state: VaultState::Open,
                 private_key: pk.to_string(),
             },
         ) {
-            Some(_) => Err(CreateVaultErr::Conflict),
+            Some(_) => Err(VaultErr::Conflict),
             None => self
                 .vaults
                 .get(&id)
-                .ok_or(CreateVaultErr::NotFound)
+                .ok_or(VaultErr::NotFound)
                 .and_then(|v| Ok(v.clone())),
         }
     }
@@ -66,13 +69,28 @@ impl VaultManager {
         self.vaults.get(&id).cloned()
     }
 
+    pub fn claim_vault(
+        &self,
+        wallet_manager: &WalletManager,
+        id: VaultId,
+    ) -> Result<Vault, VaultErr> {
+        let vault = self.get_vault(id).ok_or(VaultErr::NotFound)?;
+
+        // get bitcoin price from oracle
+        // check if vault's collateral (based on bitcoin price) is greater than or equal to the desired balance
+        // take borrow fee 
+        // wallet_manager.lend_token(vault); update user's stablecoin balance
+
+        Ok(vault)
+    }
+
     fn next_id(&mut self) -> VaultId {
         self.next_id += 1;
         self.next_id
     }
 }
 
-pub const BTC_SPARE_PRIVATE_KEYS: [&'static str; 5] = [
+pub const BTC_SPARE_PRIVATE_KEYS: [&str; 5] = [
     "L2C1QgyKqNgfV7BpEPAm6PVn2xW8zpXq6MojSbWdH18nGQF2wGsT",
     "Ky3BLwXx7ouVJSQ7P28KFTsxfH6RN86xrdqYdzSe7m2p3gp83dza",
     "L19t4zqFrzfmtgzFd1uZmeKY8UrXzXuHzmZUjswZKYUuUtkmiaBE",
