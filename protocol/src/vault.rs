@@ -69,21 +69,6 @@ impl VaultManager {
         self.vaults.get(&id).cloned()
     }
 
-    pub fn claim_vault(
-        &self,
-        wallet_manager: &WalletManager,
-        id: VaultId,
-    ) -> Result<Vault, VaultErr> {
-        let vault = self.get_vault(id).ok_or(VaultErr::NotFound)?;
-
-        // get bitcoin price from oracle
-        // check if vault's collateral (based on bitcoin price) is greater than or equal to the desired balance
-        // take borrow fee 
-        // wallet_manager.lend_token(vault); update user's stablecoin balance
-
-        Ok(vault)
-    }
-
     fn next_id(&mut self) -> VaultId {
         self.next_id += 1;
         self.next_id

@@ -43,5 +43,10 @@ pub enum VaultErr {
     NotFound,
     Conflict,
     Bad(String),
-    Unknown
+    Unknown,
+}
+
+#[derive(CandidType, Debug)]
+pub enum OracleErr {
+    Fail,
 }
