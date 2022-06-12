@@ -1,0 +1,60 @@
+type Satoshi = nat64;
+
+type Network = variant {
+  Bitcoin;
+  Regtest;
+  Testnet;
+  Signet
+};
+
+type OutPoint = record {
+  txid : blob;
+  vout : nat32
+};
+
+// An unspent transaction output.
+type Utxo = record {
+  outpoint: OutPoint;
+  value: Satoshi;
+  height: nat32;
+  confirmations: nat32;
+};
+
+type BuildTransactionError = variant {
+  MalformedDestinationAddress;
+  InsufficientBalance;
+  MalformedSourceAddress;
+};
+
+type SignTransactionError = variant {
+  MalformedSourceAddress;
+  MalformedTransaction;
+  InvalidPrivateKeyWif;
+};
+
+service: {
+  // Given the private key, compute the P2PKH address.
+  get_p2pkh_address: (private_key_wif: text, Network) -> (text) query;
+
+  // Builds an unsigned transaction and returns the indices of used UTXOs.
+  build_transaction: (utxos: vec Utxo,
+    source_address: text,
+    destination_address: text,
+    amount: Satoshi,
+    fees: Satoshi
+  ) -> (variant {
+    Ok : record { blob; vec nat64 };
+    Err : BuildTransactionError;
+  }) query;
+
+  // Creates a signed Bitcoin transaction from a previously built transaction.
+  sign_transaction: (
+    private_key_wif: text,
+    serialized_transaction: blob,
+    source_address: text
+  ) -> (variant {
+    Ok : blob;
+    Err: SignTransactionError
+  }) query;
+
+}

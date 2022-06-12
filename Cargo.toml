@@ -2,8 +2,9 @@
 
 members = [
     "btc",
-    "protocol-rs",
     "types",
-    "examples/common",
-    "examples/rust"
+    "protocol/common"
+    # "protocol-rs",
+    # "examples/common",
+    # "examples/rust"
 ]

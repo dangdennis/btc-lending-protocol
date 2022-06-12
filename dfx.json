@@ -7,12 +7,6 @@
       "wasm": "target/wasm32-unknown-unknown/release/btc.wasm",
       "build": "scripts/build-btc.sh"
     },
-    "protocol-rs": {
-      "type": "custom",
-      "candid": "protocol-rs/candid.did",
-      "wasm": "target/wasm32-unknown-unknown/release/protocol-rs.wasm",
-      "build": "scripts/build-protocol-rs.sh"
-    },
     "crypto_oracle": {
       "main": "crypto_oracle/main.mo",
       "candid": "crypto_oracle/candid.did",
@@ -22,9 +16,29 @@
       "type": "custom",
       "candid": "internet_identity/internet_identity.did",
       "wasm": "internet_identity/internet_identity.wasm"
+    },
+    "protocol": {
+      "type": "motoko",
+      "candid": "protocol/motoko/candid.did",
+      "main": "protocol/motoko/src/Main.mo",
+      "dependencies": [
+        "common"
+      ]
+    },
+    "common": {
+      "type": "custom",
+      "candid": "protocol/common/candid.did",
+      "wasm": "target/wasm32-unknown-unknown/release/common.wasm",
+      "build": "scripts/build-common.sh"
     }
   },
-  "example_canisters": {
+  "deprecated_canisters": {
+    "protocol-rs": {
+      "type": "custom",
+      "candid": "protocol-rs/candid.did",
+      "wasm": "target/wasm32-unknown-unknown/release/protocol-rs.wasm",
+      "build": "scripts/build-protocol-rs.sh"
+    },
     "btc-example-rust": {
       "type": "custom",
       "candid": "examples/rust/candid.did",
@@ -41,7 +55,9 @@
       "type": "motoko",
       "candid": "examples/motoko/candid.did",
       "main": "examples/motoko/src/Main.mo",
-      "dependencies": ["btc-example-common"]
+      "dependencies": [
+        "btc-example-common"
+      ]
     }
   },
   "defaults": {

@@ -293,6 +293,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "common"
+version = "0.1.0"
+dependencies = [
+ "bitcoin",
+ "hex",
+ "ic-btc-types",
+ "ic-cdk",
+ "ic-cdk-macros",
+ "serde",
+ "tempfile",
+]
+
+[[package]]
 name = "core-foundation"
 version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -390,32 +403,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7896dc8abb250ffdda33912550faa54c88ec8b998dec0b2c55ab224921ce11df"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "example"
-version = "0.1.0"
-dependencies = [
- "bitcoin",
- "example-common",
- "hex",
- "ic-btc-types",
- "ic-cdk",
- "ic-cdk-macros",
- "serde",
-]
-
-[[package]]
-name = "example-common"
-version = "0.1.0"
-dependencies = [
- "bitcoin",
- "hex",
- "ic-btc-types",
- "ic-cdk",
- "ic-cdk-macros",
- "serde",
- "tempfile",
 ]
 
 [[package]]
@@ -1375,21 +1362,6 @@ checksum = "534b7a0e836e3c482d2693070f982e39e7611da9695d4d1f5a4b186b51faef0a"
 dependencies = [
  "bytes",
  "prost",
-]
-
-[[package]]
-name = "protocol-rs"
-version = "0.1.0"
-dependencies = [
- "bitcoin",
- "example-common",
- "hex",
- "ic-btc-types",
- "ic-cdk",
- "ic-cdk-macros",
- "num-bigint",
- "num-traits",
- "serde",
 ]
 
 [[package]]
