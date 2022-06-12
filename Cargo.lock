@@ -1378,7 +1378,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "protocol"
+name = "protocol-rs"
 version = "0.1.0"
 dependencies = [
  "bitcoin",
