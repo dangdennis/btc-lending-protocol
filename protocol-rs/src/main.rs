@@ -1,14 +1,10 @@
 use ic_btc_types::GetBalanceError;
-use ic_btc_types::{
-    GetBalanceError, GetBalanceRequest, GetUtxosError, GetUtxosRequest, GetUtxosResponse, OutPoint,
-    SendTransactionRequest, Utxo,
-};
+use ic_btc_types::GetBalanceRequest;
 use ic_cdk::api::call::RejectionCode;
 use ic_cdk::export::candid::{CandidType, Deserialize};
 use ic_cdk::export::Principal;
 use ic_cdk::{call, caller};
 use ic_cdk_macros::{init, query, update};
-use oracle::btc_to_satoshi;
 use pool::{PoolManager, PoolType};
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -109,19 +105,21 @@ async fn claim_vault(id: VaultId) -> ClaimVaultReceipt {
         VaultErr::Bad("Failed".to_string())
     })?;
 
-    let deposited_satoshis: Result<(Result<u64, GetBalanceError>,), (RejectionCode, String)> = call(
-        btc_canister_id,
-        "get_balance",
-        (GetBalanceRequest {
-            address: vault.btc_address(bitcoin::Network::Regtest).to_string(),
-            min_confirmations: Some(0),
-        },),
-    )
-    .await;
+    let deposited_satoshis: Result<(Result<u64, GetBalanceError>,), (RejectionCode, String)> =
+        call(
+            btc_canister_id,
+            "get_balance",
+            (GetBalanceRequest {
+                address: vault.btc_address(bitcoin::Network::Regtest).to_string(),
+                min_confirmations: Some(0),
+            },),
+        )
+        .await;
 
     // convert the oracle btc price to satoshi equivalent
 
-    let expected_min_collateral =  btc_usd_price * (1 / 100_000_000_000) * (100 * vault.interest_rate * vault.debt);
+    let expected_min_collateral =
+        btc_usd_price * (1 / 100_000_000_000) * (100 * vault.interest_rate * vault.debt);
     let current_collateral = 0;
 
     // get bitcoin price from oracle

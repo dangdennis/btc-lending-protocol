@@ -7,11 +7,11 @@
       "wasm": "target/wasm32-unknown-unknown/release/btc.wasm",
       "build": "scripts/build-btc.sh"
     },
-    "protocol": {
+    "protocol-rs": {
       "type": "custom",
-      "candid": "protocol/candid.did",
-      "wasm": "target/wasm32-unknown-unknown/release/protocol.wasm",
-      "build": "scripts/build-protocol.sh"
+      "candid": "protocol-rs/candid.did",
+      "wasm": "target/wasm32-unknown-unknown/release/protocol-rs.wasm",
+      "build": "scripts/build-protocol-rs.sh"
     },
     "crypto_oracle": {
       "main": "crypto_oracle/main.mo",
