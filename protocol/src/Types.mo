@@ -89,4 +89,8 @@ module Types {
         #MalformedTransaction;
     };
 
+    public type GetBtcPriceResponse = {
+        #Ok: Nat64;
+        #Err : ?Text;
+    };
 }
