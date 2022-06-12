@@ -19,15 +19,14 @@
     },
     "protocol": {
       "type": "motoko",
-      "candid": "protocol/motoko/candid.did",
-      "main": "protocol/motoko/src/Main.mo",
+      "main": "protocol/src/Main.mo",
       "dependencies": [
         "common"
       ]
     },
     "common": {
       "type": "custom",
-      "candid": "protocol/common/candid.did",
+      "candid": "common/candid.did",
       "wasm": "target/wasm32-unknown-unknown/release/common.wasm",
       "build": "scripts/build-common.sh"
     }
