@@ -23,19 +23,36 @@ type VaultState = variant {
   Open;
 };
 
+type VaultBTC = record {
+  balance: nat64;
+  public_address: text;
+};
+
 type CreateVaultInput = record {};
 
-type CreateVaultErr = variant {
+type VaultErr = variant {
   MissingPrivateKey;
   NotFound;
   Conflict;
   Bad: text;
   Unknown;
+  InsufficientAmount;
+  InvalidBalance;
 };
 
 type CreateVaultReceipt = variant {
-  Err: CreateVaultErr;
+  Err: VaultErr;
   Ok: Vault;
+};
+
+type ClaimVaultReceipt = variant {
+  Err: VaultErr;
+  Ok: nat64;
+};
+
+type GetVaultBTC = variant {
+  Err: VaultErr;
+  Ok: VaultBTC;
 };
 
 type InitPayload = record {
@@ -44,5 +61,8 @@ type InitPayload = record {
 
 service: (InitPayload) -> {
   create_vault: (CreateVaultInput) -> (CreateVaultReceipt);
-  get_vault: (vault_id: VaultId) -> (opt Vault) query;
+  get_vault: (VaultId) -> (opt Vault) query;
+  get_vaults: () -> (vec Vault) query;
+  claim_vault: (VaultId) -> (ClaimVaultReceipt);
+  get_vault_btc: (VaultId) -> (GetVaultBTC);
 }
