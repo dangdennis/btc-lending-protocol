@@ -18,6 +18,14 @@ pub struct Vault {
 }
 
 #[derive(CandidType, Clone, Debug)]
+pub struct VaultBTC {
+    pub public_address: String,
+    pub balance: u64,
+}
+
+pub struct VaultCollection(pub Vec<Vault>);
+
+#[derive(CandidType, Clone, Debug)]
 pub enum Collateral {
     BTC,
     ICP,
@@ -44,6 +52,8 @@ pub enum VaultErr {
     Conflict,
     Bad(String),
     Unknown,
+    InsufficientAmount,
+    InvalidBalance,
 }
 
 #[derive(CandidType, Debug)]

@@ -33,3 +33,5 @@ dfx canister call protocol btc_address
 dfx canister call protocol balance  
 dfx canister call protocol get_utxos
 dfx canister call protocol send "(1_0000_0000, \"$CANISTER_BTC_ADDRESS\")"
+docker-compose exec bitcoind bitcoin-cli -conf=/conf/bitcoin.conf sendtoaddress "mg4BT7uKaDm1embmp1eZse2xV9gpLhEdr9" 10 "" "" true true null "unset" null 1.1
+

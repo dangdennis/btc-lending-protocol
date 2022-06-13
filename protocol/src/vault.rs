@@ -1,23 +1,12 @@
-use crate::{
-    types::{
-        Collateral, CreateVaultInput, CreateVaultReceipt, Vault, VaultErr, VaultId, VaultState,
-    },
-    wallet::WalletManager,
+use crate::types::{
+    Collateral, CreateVaultInput, CreateVaultReceipt, Vault, VaultCollection, VaultErr, VaultId,
+    VaultState,
 };
 use bitcoin::{secp256k1, Address, Network, PrivateKey};
 use ic_cdk::export::Principal;
 use std::collections::HashMap;
 
 type Vaults = HashMap<VaultId, Vault>;
-
-impl Vault {
-    /// Returns the regtest P2PKH address derived from the private key.
-    pub fn btc_address(&self, network: Network) -> Address {
-        let private_key = PrivateKey::from_wif(&self.private_key).unwrap();
-        let public_key = private_key.public_key(&secp256k1::Secp256k1::new());
-        Address::p2pkh(&public_key, network)
-    }
-}
 
 #[derive(Default, Clone)]
 pub struct VaultManager {
@@ -72,6 +61,37 @@ impl VaultManager {
     fn next_id(&mut self) -> VaultId {
         self.next_id += 1;
         self.next_id
+    }
+}
+
+impl Vault {
+    /// Returns the regtest P2PKH address derived from the private key.
+    pub fn btc_address(&self, network: Network) -> Address {
+        let private_key = PrivateKey::from_wif(&self.private_key).unwrap();
+        let public_key = private_key.public_key(&secp256k1::Secp256k1::new());
+        Address::p2pkh(&public_key, network)
+    }
+}
+
+impl VaultCollection {
+    fn new() -> VaultCollection {
+        VaultCollection(Vec::new())
+    }
+
+    fn add(&mut self, elem: Vault) {
+        self.0.push(elem);
+    }
+}
+
+impl FromIterator<Vault> for VaultCollection {
+    fn from_iter<I: IntoIterator<Item = Vault>>(iter: I) -> Self {
+        let mut c = VaultCollection::new();
+
+        for i in iter {
+            c.add(i);
+        }
+
+        c
     }
 }
 
