@@ -65,4 +65,6 @@ service: (InitPayload) -> {
   get_vaults: () -> (vec Vault) query;
   claim_vault: (VaultId) -> (ClaimVaultReceipt);
   get_vault_btc: (VaultId) -> (GetVaultBTC);
+  redeem_vault: (VaultId) -> (CreateVaultReceipt);
+  liquidate_vault: (VaultId) -> (CreateVaultReceipt);
 }
